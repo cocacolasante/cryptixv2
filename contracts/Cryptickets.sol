@@ -25,7 +25,7 @@ contract Cryptickets is ERC721URIStorage{
 
     bool public showCancelled;
 
-    address[] allOwners;
+    address[] public allOwners;
 
 
     mapping(address => uint) public ticketsPurchased;
@@ -60,7 +60,7 @@ contract Cryptickets is ERC721URIStorage{
             _setTokenURI(newTokenId, newTokenUri);
             
         }
-        
+
         allOwners.push(msg.sender);
 
         emit TicketsPurchased(msg.sender, amount);
@@ -68,7 +68,43 @@ contract Cryptickets is ERC721URIStorage{
     }
 
 
+    function returnAllOwners() public view returns(address[] memory){
+        address[] memory currentOwners = new address[](allOwners.length);
+        uint countIndex;
+        for(uint i; i< allOwners.length; i++){
+            currentOwners[countIndex] = allOwners[i];
+            countIndex++;
+        }
+        return currentOwners;
+    }
 
+    function refundAllTickets() public payable {
+        require(showCancelled == true, "show not cancelled");
+        address[] memory allCurrentOwners = returnAllOwners();
+
+        for(uint i; i< allOwners.length; i++){
+            uint ticketsOwned = balanceOf(allCurrentOwners[i]);
+            uint amountToSend = ticketsOwned * ticketPrice;
+
+            payable(allCurrentOwners[i]).transfer(amountToSend);
+
+        }
+
+    }
+
+
+
+    function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public virtual override {
+        require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: caller is not token owner or approved");
+
+        allOwners.push(to);
+
+        _transfer(from, to, tokenId);
+    }
 
 
     // getter functions

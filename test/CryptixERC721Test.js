@@ -33,5 +33,26 @@ describe("Cryptix ERC 721 Tickets", () =>{
     it("checks an event was emited", async () =>{
         expect(await CryptixNFTContract.connect(user1).purchaseTickets(3)).to.emit("Cryptickets", "TicketsPurchased")
     })
+    describe("minting function", async () =>{
+        beforeEach(async () =>{
+            await CryptixNFTContract.connect(user1).purchaseTickets(3)
+            await CryptixNFTContract.connect(user2).purchaseTickets(3)
+
+        })
+        it("checks the addresses added to array", async () =>{
+            expect(await CryptixNFTContract.allOwners(0)).to.equal(user1.address)
+            expect(await CryptixNFTContract.allOwners(1)).to.equal(user2.address)
+        })
+        it("checks the return current owners", async () =>{
+            const allOwnersArray = (await CryptixNFTContract.returnAllOwners())
+            expect(await allOwnersArray.length).to.equal(2)
+        })
+        it("checks addy added to array from transferfrom function", async () =>{
+            await CryptixNFTContract.connect(user1).setApprovalForAll(CryptixNFTContract.address, true)
+
+            await CryptixNFTContract.connect(user1).transferFrom(user1.address, user3.address, 1)
+            expect(await CryptixNFTContract.allOwners(2)).to.equal(user3.address)
+        })
+    })
 
 })
