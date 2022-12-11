@@ -5,9 +5,10 @@ contract Escrow{
     address private admin;
     address private crypticketsContract;
 
-    constructor(address _cryptickets){
+    receive() external payable{}
+
+    constructor(){
         admin = msg.sender;
-        crypticketsContract = _cryptickets;
     }
 
     function releaseFunds() public payable{
@@ -16,5 +17,10 @@ contract Escrow{
         payable(crypticketsContract).transfer(address(this).balance);
 
         
+    }
+
+    function setTicketContract(address _ticketAddress) public {
+        require(msg.sender == admin, "only admin");
+        crypticketsContract = _ticketAddress;
     }
 }

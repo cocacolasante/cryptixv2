@@ -4,6 +4,8 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
+import "./interfaces/IEscrow.sol";
+
 import "hardhat/console.sol";
 
 contract Cryptickets is ERC721URIStorage{
@@ -18,12 +20,13 @@ contract Cryptickets is ERC721URIStorage{
     address private venueAddress;
     address private escrowAddress;
 
-    uint public bandPercent;
+    uint public bandPercent = 10;
 
     uint public ticketPrice;
     uint public ticketLimit = 8;
 
     bool public showCancelled;
+    bool public showCompleted;
 
     address[] public allOwners;
 
@@ -32,21 +35,26 @@ contract Cryptickets is ERC721URIStorage{
 
     event TicketsPurchased(address to, uint amountPurchased);
 
+    receive() external payable{}
 
-    constructor (string memory _name, string memory _symbol) ERC721(_name, _symbol){
+    constructor (string memory _name, string memory _symbol, address _escrowAddress, address _bandAddress, address _venueAddress) ERC721(_name, _symbol){
         admin = msg.sender;
+        escrowAddress = _escrowAddress;
+        bandAddress = _bandAddress;
+        venueAddress = _venueAddress;
     }
 
-
+    // minting function to purchase single or multiple tickets
     function purchaseTickets(uint amount) public payable{
         require(msg.value >= ticketPrice * amount, "pay for tickets");
         require(ticketsPurchased[msg.sender] + amount <= ticketLimit, "max tickets purchased");
         require(_tokenIds.current() + amount <= maxSupply, "sold out");
-        require(showCancelled == false, "show was cancelled");
-
-        payable(escrowAddress).transfer(msg.value);
+        require(showCancelled == false || showCompleted == true, "show is not open");
 
         ticketsPurchased[msg.sender] += amount;
+ 
+        payable(escrowAddress).transfer(msg.value);
+
 
         for(uint i; i< amount; i++){
             _tokenIds.increment();
@@ -67,8 +75,10 @@ contract Cryptickets is ERC721URIStorage{
 
     }
 
-
+    // get all current owners
     function returnAllOwners() public view returns(address[] memory){
+        require(msg.sender == admin, "only admin");
+
         address[] memory currentOwners = new address[](allOwners.length);
         uint countIndex;
         for(uint i; i< allOwners.length; i++){
@@ -76,11 +86,15 @@ contract Cryptickets is ERC721URIStorage{
             countIndex++;
         }
         return currentOwners;
-    }
+    }   
+
+    // refund all the current ticket holders the original purchase price
 
     function refundAllTickets() public payable {
         require(showCancelled == true, "show not cancelled");
         address[] memory allCurrentOwners = returnAllOwners();
+
+        IEscrow(escrowAddress).releaseFunds();
 
         for(uint i; i< allOwners.length; i++){
             uint ticketsOwned = balanceOf(allCurrentOwners[i]);
@@ -92,8 +106,23 @@ contract Cryptickets is ERC721URIStorage{
 
     }
 
+    // complete show functions
+
+    function payBandAndVenue() public payable {
+        // IEscrow(escrowAddress).releaseFunds();
+
+        uint bandAmount = address(this).balance / bandPercent;
+
+        payable(bandAddress).transfer(bandAmount);
+        payable(venueAddress).transfer(address(this).balance);
+
+        showCompleted = true;
+    }
 
 
+
+
+    // override transfer from function to add new address to allOwners array
     function transferFrom(
         address from,
         address to,
@@ -104,6 +133,19 @@ contract Cryptickets is ERC721URIStorage{
         allOwners.push(to);
 
         _transfer(from, to, tokenId);
+    }
+
+
+    // setter function
+
+    function setCancelledShow() public{
+        require(msg.sender == admin, "onlyAdmin");
+        showCancelled = true;
+    }
+
+    function setMaxSupply(uint _maxSupply) public {
+        require(msg.sender == admin, "only admin");
+        maxSupply = _maxSupply;
     }
 
 
