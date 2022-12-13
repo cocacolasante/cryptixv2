@@ -15,15 +15,16 @@ contract Cryptickets is ERC721URIStorage{
     string public baseUri = "SAMPLEBASE";
     uint public maxSupply = 100;
 
-    address private admin;
-    address private bandAddress;
-    address private venueAddress;
-    address private escrowAddress;
+    address private immutable admin;
+    address private immutable bandAddress;
+    address private immutable venueAddress;
+    address private immutable escrowAddress;
 
     uint public bandPercent = 10;
 
     uint public ticketPrice;
     uint public ticketLimit = 8;
+    uint public endDate;
 
     bool public showCancelled;
     bool public showCompleted;
@@ -52,6 +53,7 @@ contract Cryptickets is ERC721URIStorage{
         require(showCancelled == false || showCompleted == true, "show is not open");
 
         ticketsPurchased[msg.sender] += amount;
+        allOwners.push(msg.sender);
  
         payable(escrowAddress).transfer(msg.value);
 
@@ -69,7 +71,6 @@ contract Cryptickets is ERC721URIStorage{
             
         }
 
-        allOwners.push(msg.sender);
 
         emit TicketsPurchased(msg.sender, amount);
 
@@ -110,13 +111,13 @@ contract Cryptickets is ERC721URIStorage{
 
     function payBandAndVenue() public payable {
         // IEscrow(escrowAddress).releaseFunds();
+        showCompleted = true;
 
         uint bandAmount = address(this).balance / bandPercent;
 
         payable(bandAddress).transfer(bandAmount);
         payable(venueAddress).transfer(address(this).balance);
 
-        showCompleted = true;
     }
 
 
@@ -146,6 +147,16 @@ contract Cryptickets is ERC721URIStorage{
     function setMaxSupply(uint _maxSupply) public {
         require(msg.sender == admin, "only admin");
         maxSupply = _maxSupply;
+    }
+
+    function setEndDate(uint newEndDate) public {
+        require(msg.sender == admin, "only admin");
+        endDate = newEndDate;
+    }
+
+    function setTicketPrice(uint newPrice) public{
+        require(msg.sender == admin, "only admin");
+        ticketPrice = newPrice;
     }
 
 

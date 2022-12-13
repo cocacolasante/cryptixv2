@@ -7,9 +7,8 @@ import "./Cryptickets.sol";
 import "./Escrow.sol";
 
 contract CreatorContract{
-    using Counters for Counters.Counter;
-    Counters.Counter private _showNumber;
-    address private admin;
+    uint public showNumber;
+    address public admin;
 
 
     mapping(uint => Show) public allShows;
@@ -28,19 +27,24 @@ contract CreatorContract{
     }
 
 
-    function createShow(string memory _name, string memory _symbol, address _bandAddress, address _venueAddress) public {
-        _showNumber.increment();
-        uint newShowNum = _showNumber.current();
+    function createShow(string memory _name, string memory _symbol, address _bandAddress, address _venueAddress, uint endDateInSeconds, uint price) public {
+        showNumber++;
+        uint newShowNum = showNumber;
 
         Escrow newEscrow = new Escrow();
 
         Cryptickets newTickets = new Cryptickets(_name, _symbol, address(newEscrow), _bandAddress, _venueAddress);
 
         newEscrow.setTicketContract(address(newTickets));
+        newEscrow.setShowDate(endDateInSeconds);
+        newTickets.setEndDate(endDateInSeconds);
+        newTickets.setTicketPrice(price);
 
 
         allShows[newShowNum] = Show(newShowNum, address(newTickets), address(newEscrow), _bandAddress, _venueAddress, false);
 
 
     }
+
+
 }

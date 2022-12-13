@@ -5,6 +5,8 @@ contract Escrow{
     address private admin;
     address private crypticketsContract;
 
+    uint public showDate;
+
     receive() external payable{}
 
     constructor(){
@@ -22,5 +24,10 @@ contract Escrow{
     function setTicketContract(address _ticketAddress) public {
         require(msg.sender == admin, "only admin");
         crypticketsContract = _ticketAddress;
+    }
+
+    function setShowDate(uint newDateInSeconds) public {
+        require(msg.sender == admin, "only admin function");
+        showDate = newDateInSeconds;
     }
 }
