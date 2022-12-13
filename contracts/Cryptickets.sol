@@ -55,9 +55,6 @@ contract Cryptickets is ERC721URIStorage{
         ticketsPurchased[msg.sender] += amount;
         allOwners.push(msg.sender);
  
-        payable(escrowAddress).transfer(msg.value);
-
-
         for(uint i; i< amount; i++){
             _tokenIds.increment();
 
@@ -71,6 +68,7 @@ contract Cryptickets is ERC721URIStorage{
             
         }
 
+        payable(escrowAddress).transfer(msg.value);
 
         emit TicketsPurchased(msg.sender, amount);
 

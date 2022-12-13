@@ -28,10 +28,14 @@ describe("Creator Contract", () =>{
         expect(await CreatorContract.admin())
     })
     describe("Create Show", () =>{
-        let firstShowStruct, TicketsFirstShow, EscrowFirstShow
+        let firstShowStruct, TicketsFirstShow, EscrowFirstShow, endingDate, blockNumBefore, blockBefore, timestampBefore
         beforeEach(async () =>{
             await CreatorContract.connect(user1).createShow("T-Swizzle", "TSZ", band.address, venue.address, 10, 100 )
             firstShowStruct = await CreatorContract.allShows(1)
+            blockNumBefore = await ethers.provider.getBlockNumber();
+            blockBefore = await ethers.provider.getBlock(blockNumBefore);
+            timestampBefore = blockBefore.timestamp;
+            endingDate = timestampBefore + 10;
 
             TicketsFirstShow = new ethers.Contract(firstShowStruct.ticketAddress, cryptixAbi.abi, ethers.provider)
             EscrowFirstShow = new ethers.Contract(firstShowStruct.escrowAddress, escrowAbi.abi, ethers.provider)
@@ -56,7 +60,8 @@ describe("Creator Contract", () =>{
             expect(await TicketsFirstShow.ticketPrice()).to.equal(100)
         })
         it("checks the escrow contract end date was set ", async () =>{
-            expect(await EscrowFirstShow.showDate()).to.equal()
+            expect(await EscrowFirstShow.showDate()).to.equal(endingDate)
         })
+      
     })
 })

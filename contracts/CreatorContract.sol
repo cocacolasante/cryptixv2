@@ -31,13 +31,15 @@ contract CreatorContract{
         showNumber++;
         uint newShowNum = showNumber;
 
+        uint endTime = endDateInSeconds + block.timestamp;
+
         Escrow newEscrow = new Escrow();
 
         Cryptickets newTickets = new Cryptickets(_name, _symbol, address(newEscrow), _bandAddress, _venueAddress);
 
         newEscrow.setTicketContract(address(newTickets));
-        newEscrow.setShowDate(endDateInSeconds);
-        newTickets.setEndDate(endDateInSeconds);
+        newEscrow.setShowDate(endTime);
+        newTickets.setEndDate(endTime);
         newTickets.setTicketPrice(price);
 
 
