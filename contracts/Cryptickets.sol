@@ -15,7 +15,7 @@ contract Cryptickets is ERC721URIStorage{
     string public baseUri = "SAMPLEBASE";
     uint public maxSupply = 100;
 
-    address private immutable admin;
+    address private admin;
     address private immutable bandAddress;
     address private immutable venueAddress;
     address private immutable escrowAddress;
@@ -91,6 +91,7 @@ contract Cryptickets is ERC721URIStorage{
 
     function refundAllTickets() public payable {
         require(showCancelled == true, "show not cancelled");
+        require(msg.sender == admin, "only admin");
         address[] memory allCurrentOwners = returnAllOwners();
 
         IEscrow(escrowAddress).releaseFunds();
@@ -108,11 +109,13 @@ contract Cryptickets is ERC721URIStorage{
     // complete show functions
 
     function payBandAndVenue() public payable {
-        // IEscrow(escrowAddress).releaseFunds();
         showCompleted = true;
+        IEscrow(escrowAddress).releaseFunds();
 
         uint bandAmount = address(this).balance / bandPercent;
+        uint adminFee = address(this).balance / bandPercent;
 
+        payable(admin).transfer(adminFee);
         payable(bandAddress).transfer(bandAmount);
         payable(venueAddress).transfer(address(this).balance);
 
@@ -161,6 +164,11 @@ contract Cryptickets is ERC721URIStorage{
     // getter functions
     function returnAdmin() public view returns(address){
         return admin;
+    }
+
+    function changeAdmin(address _controller) public{
+        require(msg.sender == admin, "only admin");
+        admin = _controller;
     }
 
 }

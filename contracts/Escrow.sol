@@ -14,7 +14,7 @@ contract Escrow{
     }
 
     function releaseFunds() public payable{
-        require(msg.sender == admin, "only admin function");
+        require(msg.sender == crypticketsContract, "only tickets function");
 
         payable(crypticketsContract).transfer(address(this).balance);
 
