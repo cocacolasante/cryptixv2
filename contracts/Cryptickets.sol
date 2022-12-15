@@ -15,7 +15,7 @@ contract Cryptickets is ERC721URIStorage{
     string public baseUri = "SAMPLEBASE";
     uint public maxSupply = 100;
 
-    address private admin;
+    address public admin;
     address private immutable bandAddress;
     address private immutable venueAddress;
     address private immutable escrowAddress;
@@ -38,17 +38,19 @@ contract Cryptickets is ERC721URIStorage{
 
     receive() external payable{}
 
-    constructor (string memory _name, string memory _symbol, address _escrowAddress, address _bandAddress, address _venueAddress) ERC721(_name, _symbol){
+    constructor (string memory _name, string memory _symbol, address _escrowAddress, address _bandAddress, address _venueAddress, uint _endDate, uint _price) ERC721(_name, _symbol){
         admin = msg.sender;
         escrowAddress = _escrowAddress;
         bandAddress = _bandAddress;
         venueAddress = _venueAddress;
+        endDate = _endDate;
+        ticketPrice = _price;
     }
 
     // minting function to purchase single or multiple tickets
     function purchaseTickets(uint amount) public payable{
-        require(msg.value >= ticketPrice * amount, "pay for tickets");
-        require(ticketsPurchased[msg.sender] + amount <= ticketLimit, "max tickets purchased");
+        require(msg.value >= ticketPrice * amount, "pay");
+        require(ticketsPurchased[msg.sender] + amount <= ticketLimit, "max tix");
         require(_tokenIds.current() + amount <= maxSupply, "sold out");
         require(showCancelled == false || showCompleted == true, "show is not open");
 
@@ -76,7 +78,7 @@ contract Cryptickets is ERC721URIStorage{
 
     // get all current owners
     function returnAllOwners() public view returns(address[] memory){
-        require(msg.sender == admin, "only admin");
+        require(msg.sender == admin, "oa");
 
         address[] memory currentOwners = new address[](allOwners.length);
         uint countIndex;
@@ -109,13 +111,13 @@ contract Cryptickets is ERC721URIStorage{
     // complete show functions
 
     function payBandAndVenue() public payable {
+        require(showCancelled == false, "show not completed");
         showCompleted = true;
         IEscrow(escrowAddress).releaseFunds();
 
         uint bandAmount = address(this).balance / bandPercent;
-        uint adminFee = address(this).balance / bandPercent;
 
-        payable(admin).transfer(adminFee);
+        payable(admin).transfer(bandAmount);
         payable(bandAddress).transfer(bandAmount);
         payable(venueAddress).transfer(address(this).balance);
 
@@ -150,21 +152,6 @@ contract Cryptickets is ERC721URIStorage{
         maxSupply = _maxSupply;
     }
 
-    function setEndDate(uint newEndDate) public {
-        require(msg.sender == admin, "only admin");
-        endDate = newEndDate;
-    }
-
-    function setTicketPrice(uint newPrice) public{
-        require(msg.sender == admin, "only admin");
-        ticketPrice = newPrice;
-    }
-
-
-    // getter functions
-    function returnAdmin() public view returns(address){
-        return admin;
-    }
 
     function changeAdmin(address _controller) public{
         require(msg.sender == admin, "only admin");

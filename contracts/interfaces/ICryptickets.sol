@@ -11,5 +11,10 @@ interface ICryptickets{
     function transferFrom(address from, address to, uint256 tokenId) external;
 
     function setMaxSupply(uint _maxSupply) external;
+
+    function changeAdmin(address _controller) external;
+    function setEndDate(uint newEndDate) external;
+    function setTicketPrice(uint newPrice) external;
+    function setCancelledShow() external;
     
 }

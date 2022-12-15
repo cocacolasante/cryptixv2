@@ -3,54 +3,51 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-import "./Cryptickets.sol";
 import "./interfaces/ICreateController.sol";
 import "./interfaces/IControlShow.sol";
 import "./Escrow.sol";
+import "./interfaces/ICryptickets.sol";
 
 
 
 contract CreatorContract{
     uint public showNumber;
-    address public createControllerAddress;
+    address public createContAdd;
 
     mapping(uint => Show) public allShows;
 
     struct Show{
-        uint numberOfShow;
         address ticketAddress;
         address escrowAddress;
+        address controllerContract;
         address band;
         address venue;
         bool completed;
     }
+    receive() external payable{}
 
-    constructor(address _createController){
-        createControllerAddress = _createController;
+    constructor(address _createCon){
+        createContAdd = _createCon;
     }
 
-    function createShow(string memory _name, string memory _symbol, address _bandAddress, address _venueAddress, uint endDateInSeconds, uint price) public returns(address){
+    function createShow(string memory _name, string memory _symbol, address _bandAddress, address _venueAddress, uint endDate, uint price) public{
         showNumber++;
         uint newShowNum = showNumber;
 
-        uint endTime = endDateInSeconds + block.timestamp;
+        uint endTime = endDate + block.timestamp;
 
         Escrow newEscrow = new Escrow();
 
-        Cryptickets newTickets = new Cryptickets(_name, _symbol, address(newEscrow), _bandAddress, _venueAddress);
-        newTickets.setEndDate(endTime);
-        newTickets.setTicketPrice(price);
-
-        address newController = ICreateController(createControllerAddress).createController(newShowNum, _bandAddress, _venueAddress, address(newTickets));
-
-
+        address newTickets = ICreateController(createContAdd).createTicket(_name, _symbol, address(newEscrow), _bandAddress, _venueAddress, endTime, price);
         
+        address newController = ICreateController(createContAdd).createController(newShowNum, _bandAddress, _venueAddress, address(newTickets));
+
+        ICryptickets(newTickets).changeAdmin(newController);
 
         newEscrow.setTicketContract(address(newTickets));
 
-        allShows[newShowNum] = Show(newShowNum, address(newTickets), address(newEscrow), _bandAddress, _venueAddress, false);
+        allShows[newShowNum] = Show( address(newTickets), address(newEscrow),newController, _bandAddress, _venueAddress, false);
 
-        return address(newController);
     }
 
 

@@ -16,6 +16,7 @@ contract ControlShow{
 
     bool public showCompleted;
 
+    receive() external payable{}
 
     modifier onlyVenue {
         require(msg.sender == venue, "only venue");
@@ -34,15 +35,15 @@ contract ControlShow{
         
         showCompleted = true;
 
-
         ICryptickets(ticketContract).payBandAndVenue();
-
 
     }
 
     function refundShow() public{
 
         require(msg.sender == band || msg.sender == venue , "only band or venue");
+
+        ICryptickets(ticketContract).setCancelledShow();
 
         ICryptickets(ticketContract).refundAllTickets();
 
