@@ -16,5 +16,6 @@ interface ICryptickets{
     function setEndDate(uint newEndDate) external;
     function setTicketPrice(uint newPrice) external;
     function setCancelledShow() external;
-    
+    function requestRefund() external;
+    function changeShowDate(uint _newShowDate) external;
 }

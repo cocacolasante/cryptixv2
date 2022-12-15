@@ -7,7 +7,7 @@ const controllerAbi = require("./testAbi/ControlShowAbi.json")
 const nullAddress = "0x0000000000000000000000000000000000000000"
 
 describe("Creator Contract", () =>{
-    let CreatorContract, deployer, user1, user2, user3, venue, band, CreateController
+    let CreatorContract, deployer, user1, user2, user3, venue, band, CreateController, TixCreator
 
     beforeEach(async () =>{
         const accounts = await ethers.getSigners()
@@ -21,10 +21,14 @@ describe("Creator Contract", () =>{
         const controllerContractFactory = await ethers.getContractFactory("CreateController")
         CreateController = await controllerContractFactory.deploy()
         await CreateController.deployed()
+
+        const tickCreateContractorFactory = await ethers.getContractFactory("CreateTickets")
+        TixCreator = await tickCreateContractorFactory.deploy()
+        await TixCreator.deployed()
         
 
         const creatorContractFactory = await ethers.getContractFactory("CreatorContract")
-        CreatorContract = await creatorContractFactory.deploy(CreateController.address)
+        CreatorContract = await creatorContractFactory.deploy(CreateController.address, TixCreator.address)
         await CreatorContract.deployed()
 
         // console.log(`Creator deployed to ${CreatorContract.address}`)
@@ -87,6 +91,16 @@ describe("Creator Contract", () =>{
             // eslint-disable-next-line no-undef
             expect(await ethers.provider.getBalance(user3.address)).to.equal(initialBalUser3 + BigInt(100))
 
+        })
+        it("checks the reschedule and refund functions", async () =>{
+            await TicketsFirstShow.connect(user2).purchaseTickets(1, {value: 100})
+            let initialBalUser2 = await ethers.provider.getBalance(user2.address)
+
+            await ControllerFirstShow.connect(venue).rescheduleShow(100)
+            await TicketsFirstShow.connect(user2).requestRefund();
+
+
+            expect(await ethers.provider.getBalance(user3.address)).is.greaterThan(initialBalUser2)
         })
       
     })

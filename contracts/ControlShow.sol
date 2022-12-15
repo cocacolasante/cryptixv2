@@ -50,6 +50,13 @@ contract ControlShow{
     }
 
 
+    function rescheduleShow(uint newShowDate) public {
+        require(msg.sender == band || msg.sender == venue , "only band or venue");
+        ICryptickets(ticketContract).changeShowDate(newShowDate);
+    }
+
+
+
 
     function setTicketContract(address _ticketContract) public {
         require(msg.sender == creatorContract, "only creator can call");

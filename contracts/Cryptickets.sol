@@ -28,6 +28,7 @@ contract Cryptickets is ERC721URIStorage{
 
     bool public showCancelled;
     bool public showCompleted;
+    bool public rescheduled;
 
     address[] public allOwners;
 
@@ -156,6 +157,25 @@ contract Cryptickets is ERC721URIStorage{
     function changeAdmin(address _controller) public{
         require(msg.sender == admin, "only admin");
         admin = _controller;
+    }
+
+    function changeShowDate(uint _newShowDate) public{
+        require(msg.sender == admin, "only admin");
+        endDate = _newShowDate;
+        rescheduled = true;
+
+    }
+
+    function requestRefund() public{
+        require(rescheduled == true, "not rescheduled");
+
+        uint amountBought = ticketsPurchased[msg.sender];
+        uint refundAmount = amountBought * ticketPrice;
+        ticketsPurchased[msg.sender] = 0;
+        // get approval transfer nft back
+
+        IEscrow(escrowAddress).rescheduledRefund(refundAmount);
+
     }
 
 }

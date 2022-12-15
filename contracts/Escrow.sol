@@ -21,6 +21,11 @@ contract Escrow{
         
     }
 
+    function rescheduledRefund(uint refundAmount) external {
+        require(msg.sender == crypticketsContract, "only tickets function");
+        payable(address(crypticketsContract)).transfer(refundAmount);
+    }
+
     function setTicketContract(address _ticketAddress) public {
         require(msg.sender == admin, "only admin");
         crypticketsContract = _ticketAddress;
