@@ -63,6 +63,16 @@ contract ControlShow{
         ticketContract = _ticketContract;
     }
 
+    function setNewMaxSupply(uint newMaxSup) public{
+        require(msg.sender == band || msg.sender == venue , "only band or venue");
+        ICryptickets(ticketContract).setMaxSupply(newMaxSup);
+    }
+
+    function setNewBaseUri(string memory _baseUri) public{
+        require(msg.sender == band || msg.sender == venue , "only band or venue");
+        ICryptickets(ticketContract).setBaseUri(_baseUri);
+    }
+
 
   
 }

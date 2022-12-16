@@ -18,4 +18,5 @@ interface ICryptickets{
     function setCancelledShow() external;
     function requestRefund() external;
     function changeShowDate(uint _newShowDate) external;
+    function setBaseUri(string memory _bseuri)external;
 }

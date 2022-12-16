@@ -102,6 +102,15 @@ describe("Creator Contract", () =>{
 
             expect(await ethers.provider.getBalance(user3.address)).is.greaterThan(initialBalUser2)
         })
+        it("checks the change max ticket supply", async () =>{
+            await ControllerFirstShow.connect(venue).setNewMaxSupply(1000)
+            expect(await TicketsFirstShow.maxSupply()).to.equal(1000);
+
+        })
+        it("checks the base uri can be set", async () =>{
+            await ControllerFirstShow.connect(venue).setNewBaseUri("SAMPLE2")
+            expect(await TicketsFirstShow.baseUri()).to.equal("SAMPLE2")
+        })
       
     })
 })

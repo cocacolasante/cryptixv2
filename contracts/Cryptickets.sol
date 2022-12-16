@@ -134,7 +134,7 @@ contract Cryptickets is ERC721URIStorage{
         uint256 tokenId
     ) public virtual override {
         require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: caller is not token owner or approved");
-
+        
         allOwners.push(to);
 
         _transfer(from, to, tokenId);
@@ -151,6 +151,10 @@ contract Cryptickets is ERC721URIStorage{
     function setMaxSupply(uint _maxSupply) public {
         require(msg.sender == admin, "only admin");
         maxSupply = _maxSupply;
+    }
+    function setBaseUri(string memory _bseuri)public{
+        require(msg.sender == admin, "oa");
+        baseUri = _bseuri;
     }
 
 
