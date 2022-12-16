@@ -19,4 +19,5 @@ interface ICryptickets{
     function requestRefund() external;
     function changeShowDate(uint _newShowDate) external;
     function setBaseUri(string memory _bseuri)external;
+    function maxSupply() external view returns(uint);
 }
