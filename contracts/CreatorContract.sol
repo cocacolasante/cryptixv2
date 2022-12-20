@@ -26,6 +26,7 @@ contract CreatorContract{
         address venue;
         bool completed;
     }
+    
     receive() external payable{}
 
     constructor(address _createCon, address _createTickAdd){
