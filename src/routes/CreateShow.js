@@ -1,8 +1,24 @@
 import { ethers } from 'ethers'
-import React from 'react'
+import { create as ipfsClient} from "ipfs-http-client"
 import { useState, useEffect } from 'react'
+import env from "react-dotenv";
+import { Buffer } from "buffer";
 import CREATE_SHOW_ADDRESS from '../addresses/createShow'
 import createContractAbi from "../abiAssets/createContractAbi.json"
+import controllerAbi from "../abiAssets/controllerAbi.json"
+import ticketAbi from "../abiAssets/ticketAbi.json"
+
+const auth =
+  'Basic ' + Buffer.from(env.PROJECT_ID + ':' + env.PROJECT_CODE).toString('base64');
+
+const client = ipfsClient({
+    host: 'ipfs.infura.io',
+    port: 5001,
+    protocol: 'https',
+    headers: {
+        authorization: auth,
+        },
+    });
 
 const CreateShow = () => {
     const [showName, setShowName ] = useState()
@@ -11,12 +27,60 @@ const CreateShow = () => {
     const [venueAddress, setVenueAddress] = useState()
     const [showDate, setShowDate] = useState()
     const [showPrice, setShowPrice] = useState()
+    const [ticketNFTArt, setTicketNFTArt] = useState()
+    const [controller, setController] = useState()
+    const [ticketAddress, setTicketAddress] = useState()
 
+
+    const uploadToIPFS = async (e) =>{
+        e.preventDefault()
+        const files = e.target.files;
+
+        if (!files) {
+            return alert("No files selected");
+          }
+
+        const file = e.target.files[0]
+        try{
+            const result = await client.add(file)
+
+            // create json nft meta data with ticketnftart as image meta data with ticket number aand other meta data
+
+            setTicketNFTArt(`https://cryptix.infura-ipfs.io/ipfs/${result.path}`)
+
+            console.log(ticketNFTArt)
+
+
+            const provider = new ethers.providers.Web3Provider(window.ethereum)
+            const signer = provider.getSigner()
+
+            const ControllerContract = new ethers.Contract(controller, controllerAbi.abi, signer )
+
+
+
+            let txn = await ControllerContract.setNewBaseUri(`https://cryptix.infura-ipfs.io/ipfs/${result.path}`)
+
+            let res = await txn.wait()
+
+            if(res.status === 1){
+                console.log("success")
+            }else{
+                console.log("failed")
+            }
+
+            
+
+
+        }catch(error){
+            console.log(error)
+        }
+    }
 
 
     const createNewShow = async (e) =>{
         e.preventDefault()
 
+        
         try{
 
             const {ethereum} = window;
@@ -34,6 +98,13 @@ const CreateShow = () => {
 
                 if(receipt.status === 1){
                     console.log("success")
+                    const currentShowNum = await CreateShowContract.showNumber()
+                    const currentShowStruct = await CreateShowContract.allShows(currentShowNum)
+                    const ControllerAddress = currentShowStruct.controllerContract;
+
+                    setController(ControllerAddress)
+                    setTicketAddress(currentShowStruct.ticketAddress)
+
                 }else{
                     alert("failed")
                 }
@@ -108,7 +179,7 @@ const CreateShow = () => {
                 <button onClick={e=>createNewShow(e)} >Create New Show</button>
 
                 <label >Ticket Picture Upload</label>
-                <input type="file" />
+                <input type="file" onChange={uploadToIPFS} placeholder="upload ticket photo" />
 
             </form>
             

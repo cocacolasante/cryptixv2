@@ -33,3 +33,7 @@ typechain-types
 cache
 artifacts
 
+.env
+env.js
+
+

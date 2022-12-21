@@ -6,7 +6,7 @@ import "./interfaces/IEscrow.sol";
 import "./interfaces/ICryptickets.sol";
 
 contract ControlShow{
-    address private ticketContract;
+    address public ticketContract;
 
     address private creatorContract;
     address private immutable band;

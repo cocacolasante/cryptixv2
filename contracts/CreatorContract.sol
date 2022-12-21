@@ -51,6 +51,7 @@ contract CreatorContract{
         newEscrow.setTicketContract(address(newTickets));
 
         allShows[newShowNum] = Show( address(newTickets), address(newEscrow),newController, _bandAddress, _venueAddress, false);
+        
 
     }
 
