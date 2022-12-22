@@ -11,6 +11,8 @@ contract ControlShow{
     address private creatorContract;
     address private immutable band;
     address private immutable venue;
+
+    uint public tixMaxSupply;
     
     uint public immutable showNumber;
 
@@ -65,6 +67,7 @@ contract ControlShow{
 
     function setNewMaxSupply(uint newMaxSup) public{
         require(msg.sender == band || msg.sender == venue , "only band or venue");
+        tixMaxSupply = newMaxSup;
         ICryptickets(ticketContract).setMaxSupply(newMaxSup);
     }
 

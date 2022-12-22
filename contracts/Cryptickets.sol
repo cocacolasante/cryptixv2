@@ -12,7 +12,7 @@ contract Cryptickets is ERC721URIStorage{
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    string public baseUri = "SAMPLEBASE";
+    string public baseUri;
     uint public maxSupply = 100;
 
     address public admin;

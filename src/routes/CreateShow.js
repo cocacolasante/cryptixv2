@@ -27,6 +27,7 @@ const CreateShow = () => {
     const [venueAddress, setVenueAddress] = useState()
     const [showDate, setShowDate] = useState()
     const [showPrice, setShowPrice] = useState()
+    const [maxSupply, setMaxSupply] = useState()
     const [ticketNFTArt, setTicketNFTArt] = useState()
     const [controller, setController] = useState()
     const [ticketAddress, setTicketAddress] = useState()
@@ -41,6 +42,7 @@ const CreateShow = () => {
           }
 
         const file = e.target.files[0]
+
         try{
             const result = await client.add(file)
 
@@ -49,31 +51,54 @@ const CreateShow = () => {
             setTicketNFTArt(`https://cryptix.infura-ipfs.io/ipfs/${result.path}`)
 
             console.log(ticketNFTArt)
-
-
+            
+            let txn, res
             const provider = new ethers.providers.Web3Provider(window.ethereum)
             const signer = provider.getSigner()
 
             const ControllerContract = new ethers.Contract(controller, controllerAbi.abi, signer )
 
 
-
-            let txn = await ControllerContract.setNewBaseUri(`https://cryptix.infura-ipfs.io/ipfs/${result.path}`)
-
-            let res = await txn.wait()
-
+            txn = await ControllerContract.setNewMaxSupply(maxSupply)
+            res = await txn.wait()
+            
             if(res.status === 1){
                 console.log("success")
             }else{
                 console.log("failed")
             }
 
-            
-
 
         }catch(error){
             console.log(error)
         }
+    }
+
+    const createTicketJson = async (e) =>{
+        e.preventDefault()
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+            
+
+        const ControllerContract = new ethers.Contract(controller, controllerAbi.abi, provider )
+
+        let currentMax = await ControllerContract.tixMaxSupply()
+        currentMax = currentMax.toString()
+
+        console.log(currentMax)
+
+
+        // creates and uploads json files to 
+        for(let i=1; i < currentMax; i++){
+            const fileToAdd = JSON.stringify({BandName: showName, showSymbol: showSymbol, TicketNumber: i, Band: bandAddress, Venue: venueAddress, image: ticketNFTArt})
+            
+            const newResult = await client.add(fileToAdd)
+    
+            const uri = `https://cryptix.infura-ipfs.io/ipfs/${newResult.path}`
+    
+            console.log(uri)
+
+        }
+
     }
 
 
@@ -159,6 +184,7 @@ const CreateShow = () => {
             <p>Venue Address: {venueAddress} </p>
             <p>Show Date: {showDate} </p>
             <p>Show Price: {showPrice} </p>
+            <p>Max Tickets: {maxSupply} </p>
         </div>
         <div>
             <form>
@@ -175,14 +201,19 @@ const CreateShow = () => {
 
                 <label >Ticket Price </label>
                 <input onChange={e=>setShowPrice(e.target.value)} name="show name" />
+                <label >Set Max Amount of Tickets </label>
+                <input onChange={e=>setMaxSupply(e.target.value)} name="show name" />
 
                 <button onClick={e=>createNewShow(e)} >Create New Show</button>
+
 
                 <label >Ticket Picture Upload</label>
                 <input type="file" onChange={uploadToIPFS} placeholder="upload ticket photo" />
 
             </form>
-            
+            <div>
+                <button onClick={e=>createTicketJson(e)} >Create Tickets</button>
+            </div>
         </div>
     </div>
   )
