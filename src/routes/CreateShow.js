@@ -6,7 +6,6 @@ import { Buffer } from "buffer";
 import CREATE_SHOW_ADDRESS from '../addresses/createShow'
 import createContractAbi from "../abiAssets/createContractAbi.json"
 import controllerAbi from "../abiAssets/controllerAbi.json"
-import ticketAbi from "../abiAssets/ticketAbi.json"
 
 const auth =
   'Basic ' + Buffer.from(env.PROJECT_ID + ':' + env.PROJECT_CODE).toString('base64');
@@ -59,6 +58,14 @@ const CreateShow = () => {
             const ControllerContract = new ethers.Contract(controller, controllerAbi.abi, signer )
 
 
+            txn = await ControllerContract.setNewBaseUri(`https://cryptix.infura-ipfs.io/ipfs/${result.path}`)
+            res = await txn.wait()
+            
+            if(res.status === 1){
+                console.log("success")
+            }else{
+                console.log("failed")
+            }
             txn = await ControllerContract.setNewMaxSupply(maxSupply)
             res = await txn.wait()
             
@@ -74,32 +81,6 @@ const CreateShow = () => {
         }
     }
 
-    const createTicketJson = async (e) =>{
-        e.preventDefault()
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-            
-
-        const ControllerContract = new ethers.Contract(controller, controllerAbi.abi, provider )
-
-        let currentMax = await ControllerContract.tixMaxSupply()
-        currentMax = currentMax.toString()
-
-        console.log(currentMax)
-
-
-        // creates and uploads json files to 
-        for(let i=1; i < currentMax; i++){
-            const fileToAdd = JSON.stringify({BandName: showName, showSymbol: showSymbol, TicketNumber: i, Band: bandAddress, Venue: venueAddress, image: ticketNFTArt})
-            
-            const newResult = await client.add(fileToAdd)
-    
-            const uri = `https://cryptix.infura-ipfs.io/ipfs/${newResult.path}`
-    
-            console.log(uri)
-
-        }
-
-    }
 
 
     const createNewShow = async (e) =>{
@@ -211,9 +192,6 @@ const CreateShow = () => {
                 <input type="file" onChange={uploadToIPFS} placeholder="upload ticket photo" />
 
             </form>
-            <div>
-                <button onClick={e=>createTicketJson(e)} >Create Tickets</button>
-            </div>
         </div>
     </div>
   )

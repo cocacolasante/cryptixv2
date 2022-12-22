@@ -12,7 +12,7 @@ contract Cryptickets is ERC721URIStorage{
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    string public baseUri;
+    string public baseUri; //used for the image
     uint public maxSupply = 100;
 
     address public admin;
@@ -49,7 +49,7 @@ contract Cryptickets is ERC721URIStorage{
     }
 
     // minting function to purchase single or multiple tickets
-    function purchaseTickets(uint amount) public payable{
+    function purchaseTickets(uint amount, string memory tokenUri) public payable{
         require(msg.value >= ticketPrice * amount, "pay");
         require(ticketsPurchased[msg.sender] + amount <= ticketLimit, "max tix");
         require(_tokenIds.current() + amount <= maxSupply, "sold out");
@@ -65,9 +65,7 @@ contract Cryptickets is ERC721URIStorage{
 
             _mint(msg.sender, newTokenId);
 
-            string memory newTokenUri = string(abi.encode(baseUri, Strings.toString(newTokenId), ".json"));
-
-            _setTokenURI(newTokenId, newTokenUri);
+            _setTokenURI(newTokenId, tokenUri);
             
         }
 
