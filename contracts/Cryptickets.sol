@@ -10,7 +10,7 @@ import "hardhat/console.sol";
 
 contract Cryptickets is ERC721URIStorage{
     using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
+    Counters.Counter public _tokenIds;
 
     string public baseUri; //used for the image
     uint public maxSupply = 100;

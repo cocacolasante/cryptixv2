@@ -1,10 +1,25 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
+import { create as ipfsClient} from "ipfs-http-client"
 import {ethers} from "ethers"
+import env from "react-dotenv";
+import { Buffer } from "buffer";
 import CREATE_SHOW_ADDRESS from '../addresses/createShow'
 import createContractAbi from "../abiAssets/createContractAbi.json"
 import ticketAbi from "../abiAssets/ticketAbi.json"
 
+
+const auth =
+  'Basic ' + Buffer.from(env.PROJECT_ID + ':' + env.PROJECT_CODE).toString('base64');
+
+const client = ipfsClient({
+    host: 'ipfs.infura.io',
+    port: 5001,
+    protocol: 'https',
+    headers: {
+        authorization: auth,
+        },
+    });
 
 const ViewShows = () => {
     const [allShows, setAllShows] = useState()
@@ -36,6 +51,27 @@ const ViewShows = () => {
 
         }
         console.log(output)
+    }
+
+    const buyTickets = async (e, ticketAddress) =>{
+        e.preventDefault()
+        try{
+            const {ethereum} = window;
+            const provider = new ethers.providers.Web3Provider(ethereum)
+            const signer = provider.getSigner()
+
+            const TicketContract = new ethers.Contract(ticketAddress, ticketAbi.abi, signer)
+
+            let baseURI = await TicketContract.baseUri()
+            let ticketNumber = await TicketContract._tokenIds()
+
+
+            let result = client.add(JSON.stringify({Band: e["bandAddress"], Venue: e["venueAddress"], TicketNumber: ticketNumber, image: baseURI  }))
+
+
+        }catch(error){
+            console.log(error)
+        }
     }
 
     const mapShowsToCards = () =>{
@@ -88,6 +124,7 @@ const ViewShows = () => {
                     <h3>{i["bandAddress"]}</h3>
                     <h3>{i["venueAddress"]}</h3>
                     <h3>{i["ticketAddress"]}</h3>
+                    <button value={i} onClick={e=>buyTickets(e.target.value, i["ticketAddress"])} >Buy Ticket</button>
 
                 </div>
             )

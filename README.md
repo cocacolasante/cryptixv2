@@ -8,6 +8,9 @@ check in tix contract
     -test all of it
     -
 
+TO DO
+    add additional item to struct for show name
+
 
 TO DO FOR CHECK IN (FRONT END)
 Create Show page
