@@ -47,9 +47,11 @@ const CreateShow = () => {
 
             // create json nft meta data with ticketnftart as image meta data with ticket number aand other meta data
 
-            setTicketNFTArt(`https://cryptix.infura-ipfs.io/ipfs/${result.path}`)
+            setTicketNFTArt(`https://ipfs.infura.io:5001/${result.path}`)
 
             console.log(ticketNFTArt)
+            console.log(`https://ipfs.infura.io:5001/${result.path}`)
+
             
             let txn, res
             const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -58,22 +60,18 @@ const CreateShow = () => {
             const ControllerContract = new ethers.Contract(controller, controllerAbi.abi, signer )
 
 
-            txn = await ControllerContract.setNewBaseUri(`https://cryptix.infura-ipfs.io/ipfs/${result.path}`)
+            txn = await ControllerContract.setNewBaseUri(`https://ipfs.infura.io:5001/${result.path}`)
             res = await txn.wait()
             
+
+
             if(res.status === 1){
                 console.log("success")
             }else{
                 console.log("failed")
             }
-            txn = await ControllerContract.setNewMaxSupply(maxSupply)
-            res = await txn.wait()
             
-            if(res.status === 1){
-                console.log("success")
-            }else{
-                console.log("failed")
-            }
+
 
 
         }catch(error){
@@ -104,15 +102,28 @@ const CreateShow = () => {
 
                 if(receipt.status === 1){
                     console.log("success")
-                    const currentShowNum = await CreateShowContract.showNumber()
-                    const currentShowStruct = await CreateShowContract.allShows(currentShowNum)
-                    const ControllerAddress = currentShowStruct.controllerContract;
-
-                    setController(ControllerAddress)
-                    setTicketAddress(currentShowStruct.ticketAddress)
-
+                    
                 }else{
                     alert("failed")
+                }
+                const currentShowNum = await CreateShowContract.showNumber()
+                const currentShowStruct = await CreateShowContract.allShows(currentShowNum)
+                const ControllerAddress = currentShowStruct.controllerContract;
+                console.log(ControllerAddress)
+
+                setController(ControllerAddress)
+                setTicketAddress(currentShowStruct.ticketAddress)
+                let txn, res
+    
+                const ControllerContract = new ethers.Contract(ControllerAddress, controllerAbi.abi, signer )
+
+                txn = await ControllerContract.setNewMaxSupply(maxSupply)
+                res = await txn.wait()
+                
+                if(res.status === 1){
+                    console.log("success")
+                }else{
+                    console.log("failed")
                 }
             }
 

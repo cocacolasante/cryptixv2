@@ -24,6 +24,7 @@ const client = ipfsClient({
 const ViewShows = () => {
     const [allShows, setAllShows] = useState()
 
+    
     const returnAllShows = async () =>{
         const {ethereum} = window;
         const provider = new ethers.providers.Web3Provider(ethereum)
@@ -54,7 +55,7 @@ const ViewShows = () => {
     }
 
     const buyTickets = async (e, ticketAddress) =>{
-        e.preventDefault()
+        console.log(ticketAddress)
         try{
             const {ethereum} = window;
             const provider = new ethers.providers.Web3Provider(ethereum)
@@ -64,10 +65,30 @@ const ViewShows = () => {
 
             let baseURI = await TicketContract.baseUri()
             let ticketNumber = await TicketContract._tokenIds()
+            let ticketPrice = await TicketContract.ticketPrice()
+            ticketPrice= ticketPrice.toString()
+            console.log(baseURI)
+            console.log(ticketPrice)
 
 
-            let result = client.add(JSON.stringify({Band: e["bandAddress"], Venue: e["venueAddress"], TicketNumber: ticketNumber, image: baseURI  }))
+            let result = await client.add(JSON.stringify({ShowName: e["showName"],Band: e["bandAddress"], Venue: e["venueAddress"], TicketNumber: ticketNumber, image: baseURI  }))
 
+            const uri = `https://ipfs.infura.io:5001/${result.path}`
+
+            console.log(`https://ipfs.infura.io:5001/${result.path}`)
+
+            let txn = await TicketContract.purchaseTickets(1, `https://ipfs.infura.io:5001/${result.path}`, {value: ticketPrice})
+            let res = await txn.wait()
+
+            const currentTix = await TicketContract._tokenIds()
+            console.log(currentTix.toString())
+
+            if(res.status === 1){
+                console.log("Success")
+                
+            }else{
+                console.log("Failed")
+            }
 
         }catch(error){
             console.log(error)
@@ -104,6 +125,7 @@ const ViewShows = () => {
 
         
     }
+
 
     useEffect(()=>{
         returnAllShows()
