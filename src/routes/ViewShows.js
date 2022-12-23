@@ -56,7 +56,7 @@ const ViewShows = () => {
         console.log(output)
     }
 
-    const buyTickets = async (e, ticketAddress) =>{
+    const buyTickets = async (e, ticketAddress, show_name, bandaddy, venueAddy) =>{
         console.log(ticketAddress)
         try{
             const {ethereum} = window;
@@ -73,7 +73,7 @@ const ViewShows = () => {
             console.log(ticketPrice)
 
 
-            let result = await client.add(JSON.stringify({ShowName: e["showName"],Band: e["bandAddress"], Venue: e["venueAddress"], TicketNumber: ticketNumber, image: baseURI  }))
+            let result = await client.add(JSON.stringify({ShowName: show_name,Band: bandaddy, Venue: venueAddy, TicketNumber: ticketNumber.toString(), image: baseURI  }))
 
             console.log(`https://cryptix.infura-ipfs.io/ipfs/${result.path}`)
 
@@ -161,7 +161,7 @@ const ViewShows = () => {
                     <h3>{i["bandAddress"]}</h3>
                     <h3>{i["venueAddress"]}</h3>
                     <h3>{i["ticketAddress"]}</h3>
-                    <button value={i} onClick={e=>buyTickets(e.target.value, i["ticketAddress"])} >Buy Ticket</button>
+                    <button value={i} onClick={e=>buyTickets(e.target.value, i["ticketAddress"], i["ShowName"], i["bandAddress"], i["venueAddress"])} >Buy Ticket</button>
 
                     <button value={i["ticketAddress"]} onClick={e=>_getTicketNFTImage(e.target.value)} >test</button>
 
