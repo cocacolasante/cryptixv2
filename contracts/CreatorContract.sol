@@ -19,6 +19,7 @@ contract CreatorContract{
     mapping(uint => Show) public allShows;
 
     struct Show{
+        string showName;
         address ticketAddress;
         address escrowAddress;
         address controllerContract;
@@ -36,7 +37,7 @@ contract CreatorContract{
 
     function createShow(string memory _name, string memory _symbol, address _bandAddress, address _venueAddress, uint endDate, uint price) public{
         showNumber++;
-        uint newShowNum = showNumber;
+        
 
         uint endTime = endDate + block.timestamp;
 
@@ -44,13 +45,13 @@ contract CreatorContract{
 
         address newTickets = ICreateTickets(createTickAdd).createTicket(_name, _symbol, address(newEscrow), _bandAddress, _venueAddress, endTime, price);
         
-        address newController = ICreateController(createContAdd).createController(newShowNum, _bandAddress, _venueAddress, address(newTickets));
+        address newController = ICreateController(createContAdd).createController(showNumber, _bandAddress, _venueAddress, address(newTickets));
 
         ICryptickets(newTickets).changeAdmin(newController);
 
         newEscrow.setTicketContract(address(newTickets));
 
-        allShows[newShowNum] = Show(address(newTickets), address(newEscrow),newController, _bandAddress, _venueAddress, false);
+        allShows[showNumber] = Show(_name, address(newTickets), address(newEscrow),newController, _bandAddress, _venueAddress, false);
         
 
     }

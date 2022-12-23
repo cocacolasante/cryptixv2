@@ -31,7 +31,8 @@ const ViewShows = () => {
 
         const CreateShowContract = new ethers.Contract(CREATE_SHOW_ADDRESS, createContractAbi.abi, provider)
 
-        const currentShowNum = await CreateShowContract.showNumber()
+        let currentShowNum = await CreateShowContract.showNumber()
+        currentShowNum++;
         
         let output = []
         for(let i = 1; i < currentShowNum; i++){
@@ -39,11 +40,12 @@ const ViewShows = () => {
 
             const returnedShow = {
                 showNumber: i,
+                ShowName: show.showName,
                 bandAddress: show.band,
                 venueAddress: show.venue,
                 ticketAddress: show.ticketAddress,
                 escrowAddress: show.escrowAddress,
-                // image: await _getTicketNFTImage(show.ticketAddress)
+                image: await _getTicketNFTImage(show.ticketAddress)
             }
 
             output.push(returnedShow)
@@ -73,11 +75,9 @@ const ViewShows = () => {
 
             let result = await client.add(JSON.stringify({ShowName: e["showName"],Band: e["bandAddress"], Venue: e["venueAddress"], TicketNumber: ticketNumber, image: baseURI  }))
 
-            const uri = `https://ipfs.infura.io:5001/${result.path}`
+            console.log(`https://cryptix.infura-ipfs.io/ipfs/${result.path}`)
 
-            console.log(`https://ipfs.infura.io:5001/${result.path}`)
-
-            let txn = await TicketContract.purchaseTickets(1, `https://ipfs.infura.io:5001/${result.path}`, {value: ticketPrice})
+            let txn = await TicketContract.purchaseTickets(1, `https://cryptix.infura-ipfs.io/ipfs/${result.path}`, {value: ticketPrice})
             let res = await txn.wait()
 
             const currentTix = await TicketContract._tokenIds()
@@ -118,13 +118,25 @@ const ViewShows = () => {
         const TicketContract = new ethers.Contract(ticketAddress, ticketAbi.abi, provider)
 
         let ticketUri = await TicketContract.baseUri()
-        ticketUri = ticketUri.toString()
+        
 
         let response = await fetch(ticketUri)
-        console.log(response)
-
         
+        let url = response.url;
+        console.log(url)
+
+        return url
+
     }
+
+    const displayTicketNft = (i) =>{
+        return(
+            <div>
+                <img src={_getTicketNFTImage(i)} alt="tickets" />
+            </div>
+        )
+    }
+
 
 
     useEffect(()=>{
@@ -141,19 +153,23 @@ const ViewShows = () => {
         {!allShows ? <p>Loading Blockchain Data</p> :( allShows.map((i)=>{
             console.log(i)
             return(
-                <div>
-                    <h3>{i["showNumber"]}</h3>
+                <div key ={i["showNumber"]}>
+                    <h3 >{i["showNumber"]}</h3>
+                    <h2>{i["ShowName"]}</h2>
+                    <img className='thumbnail' src={i["image"] } alt="tickets" />
+
                     <h3>{i["bandAddress"]}</h3>
                     <h3>{i["venueAddress"]}</h3>
                     <h3>{i["ticketAddress"]}</h3>
                     <button value={i} onClick={e=>buyTickets(e.target.value, i["ticketAddress"])} >Buy Ticket</button>
+
+                    <button value={i["ticketAddress"]} onClick={e=>_getTicketNFTImage(e.target.value)} >test</button>
 
                 </div>
             )
         })) }
            
         </div>
-        <button onClick={_getTicketNFTImage} >test</button>
     </div>
   )
 }

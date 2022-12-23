@@ -4,3 +4,8 @@
   padding-right: 25px;
   padding-top: 12px;;
 }
+
+.thumbnail{
+  max-height: 250px;
+  max-width: 250px;
+}

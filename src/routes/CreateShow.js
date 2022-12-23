@@ -47,10 +47,10 @@ const CreateShow = () => {
 
             // create json nft meta data with ticketnftart as image meta data with ticket number aand other meta data
 
-            setTicketNFTArt(`https://ipfs.infura.io:5001/${result.path}`)
+            setTicketNFTArt(`https://cryptix.infura-ipfs.io/ipfs/${result.path}`)
 
             console.log(ticketNFTArt)
-            console.log(`https://ipfs.infura.io:5001/${result.path}`)
+            console.log(`https://cryptix.infura-ipfs.io/ipfs/${result.path}`)
 
             
             let txn, res
@@ -60,7 +60,7 @@ const CreateShow = () => {
             const ControllerContract = new ethers.Contract(controller, controllerAbi.abi, signer )
 
 
-            txn = await ControllerContract.setNewBaseUri(`https://ipfs.infura.io:5001/${result.path}`)
+            txn = await ControllerContract.setNewBaseUri(`https://cryptix.infura-ipfs.io/ipfs/${result.path}`)
             res = await txn.wait()
             
 
