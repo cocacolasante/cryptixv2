@@ -67,7 +67,7 @@ const Navbar = () => {
                 </ul>
             </div>
             <div>
-            {!activeAccount ? <button onClick={connectWallet}>Connect Wallet</button> : <p>{activeAccount.slice(0, 6)}...{activeAccount.slice(-4)} </p>}
+                {!activeAccount ? <button onClick={connectWallet}>Connect Wallet</button> : <p>{activeAccount.slice(0, 6)}...{activeAccount.slice(-4)} </p>}
 
             </div>
         </div>

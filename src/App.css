@@ -22,6 +22,10 @@
 .create-container{
   padding-left: 25px;
   padding-bottom: 25px;
+  padding-top: 30px;
+}
+.create-show-inputs{
+  
 }
 
 .logo-div{
@@ -29,7 +33,18 @@
   float: left;
   padding-left: 25px;
   padding-top: 12px;;
+  padding-bottom: 25px;
 }
 .create-show-div{
   padding-top: 25px;
 }
+.create-show-container{
+  display: flexbox;
+}
+.create-form{
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+

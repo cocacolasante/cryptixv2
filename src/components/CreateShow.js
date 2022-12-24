@@ -188,11 +188,11 @@ const CreateShow = () => {
 
 
   return (
-    <div className='create-show-div'>
+    <div className='create-show-container' >
         <div>
             <h1>Create Show</h1>
         </div>
-        <div>
+        <div className='create-show-div'>
             <h2>Show info</h2>
             <p>Show Name: {showName} </p>
             <p>Symbol: {showSymbol} </p>
@@ -202,26 +202,33 @@ const CreateShow = () => {
             <p>Show Price: {showPrice} </p>
             <p>Max Tickets: {maxSupply} </p>
         </div>
-        <div>
-            <form>
+        <div className='create-show-inputs'>
+            <h2>Create Tickets For Your Event Below</h2>
+            <form className='create-form'>
+
                 <label >Show name</label>
                 <input onChange={e=>setShowName(e.target.value)} name="show name" required />
+                <br />
                 <label >Show Symbol (3 letters)</label>
                 <input onChange={e=>setShowSymbol(e.target.value)} name="show symbol" required />
+                <br />
                 <label >Band Address</label>
                 <input onChange={e=>setBandAddress(e.target.value)} name="band address" required />
+                <br />
                 <label >Venue Address</label>
                 <input onChange={e=>setVenueAddress(e.target.value)} name="venue address" required/>
+                <br />
                 <label >Show Date </label>
                 <input type="datetime-local" onChange={e=>setShowDate(e.target.value)} name="show date" required />
-
+                <br />
                 <label >Ticket Price </label>
                 <input onChange={e=>setShowPrice(e.target.value)} name="ticket price" required />
+                <br />
                 <label >Set Max Amount of Tickets </label>
                 <input onChange={e=>setMaxSupply(e.target.value)} name="max supply" required />
-
+                <br />
                 <button onClick={e=>createNewShow(e)} >Create New Show</button>
-
+                <br />
 
                 <label >Ticket Picture Upload</label>
                 <input type="file" onChange={uploadToIPFS} placeholder="upload ticket photo" />
