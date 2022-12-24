@@ -19,6 +19,11 @@ const client = ipfsClient({
         },
     });
 
+const toWeiStr = (num) => ethers.utils.parseEther(num.toString())
+const toWeiInt = (num) => ethers.utils.parseEther(num) 
+const fromWei = (num) => ethers.utils.formatEther(num)
+
+
 const CreateShow = () => {
     const [showName, setShowName ] = useState()
     const [showSymbol, setShowSymbol] = useState()
@@ -87,7 +92,8 @@ const CreateShow = () => {
         let dateTime = date+' '+time;
         const currentDateTime = new Date(dateTime)
         let seconds = Math.abs(endDate.getTime() - currentDateTime.getTime())/1000;
-        console.log(seconds)
+
+
 
         return seconds
         
@@ -98,6 +104,7 @@ const CreateShow = () => {
         e.preventDefault()
 
         const secondsToShow = _convertDateTime()
+        const convertedShowPrice = toWeiStr(showPrice).toString()
         
         try{
 
@@ -109,7 +116,7 @@ const CreateShow = () => {
     
                 const CreateShowContract = new ethers.Contract(CREATE_SHOW_ADDRESS, createContractAbi.abi, signer )
     
-                const tx = await CreateShowContract.createShow(showName, showSymbol, bandAddress, venueAddress, secondsToShow, showPrice)
+                const tx = await CreateShowContract.createShow(showName, showSymbol, bandAddress, venueAddress, secondsToShow, convertedShowPrice)
                 
 
                 const receipt = await tx.wait()
