@@ -72,6 +72,7 @@ const CreateShow = () => {
 
             if(res.status === 1){
                 console.log("success")
+                alert("Success, please refresh page")
             }else{
                 console.log("failed")
             }
@@ -93,8 +94,6 @@ const CreateShow = () => {
         const currentDateTime = new Date(dateTime)
         let seconds = Math.abs(endDate.getTime() - currentDateTime.getTime())/1000;
 
-
-
         return seconds
         
     }
@@ -104,7 +103,10 @@ const CreateShow = () => {
         e.preventDefault()
 
         const secondsToShow = _convertDateTime()
+        console.log(secondsToShow)
         const convertedShowPrice = toWeiStr(showPrice).toString()
+        console.log(convertedShowPrice)
+
         
         try{
 
@@ -123,7 +125,7 @@ const CreateShow = () => {
 
                 if(receipt.status === 1){
                     console.log("success")
-                    
+                    alert("success please wait for next transaction")
                 }else{
                     alert("failed")
                 }
@@ -143,6 +145,7 @@ const CreateShow = () => {
                 
                 if(res.status === 1){
                     console.log("success")
+                    alert("Please upload nft image next")
                 }else{
                     console.log("failed")
                 }
@@ -185,7 +188,7 @@ const CreateShow = () => {
 
 
   return (
-    <div>
+    <div className='create-show-div'>
         <div>
             <h1>Create Show</h1>
         </div>
@@ -202,20 +205,20 @@ const CreateShow = () => {
         <div>
             <form>
                 <label >Show name</label>
-                <input onChange={e=>setShowName(e.target.value)} name="show name" />
+                <input onChange={e=>setShowName(e.target.value)} name="show name" required />
                 <label >Show Symbol (3 letters)</label>
-                <input onChange={e=>setShowSymbol(e.target.value)} name="show name" />
+                <input onChange={e=>setShowSymbol(e.target.value)} name="show symbol" required />
                 <label >Band Address</label>
-                <input onChange={e=>setBandAddress(e.target.value)} name="show name" />
+                <input onChange={e=>setBandAddress(e.target.value)} name="band address" required />
                 <label >Venue Address</label>
-                <input onChange={e=>setVenueAddress(e.target.value)} name="show name" />
+                <input onChange={e=>setVenueAddress(e.target.value)} name="venue address" required/>
                 <label >Show Date </label>
-                <input type="datetime-local" onChange={e=>setShowDate(e.target.value)} name="show name" />
+                <input type="datetime-local" onChange={e=>setShowDate(e.target.value)} name="show date" required />
 
                 <label >Ticket Price </label>
-                <input onChange={e=>setShowPrice(e.target.value)} name="show name" />
+                <input onChange={e=>setShowPrice(e.target.value)} name="ticket price" required />
                 <label >Set Max Amount of Tickets </label>
-                <input onChange={e=>setMaxSupply(e.target.value)} name="show name" />
+                <input onChange={e=>setMaxSupply(e.target.value)} name="max supply" required />
 
                 <button onClick={e=>createNewShow(e)} >Create New Show</button>
 
@@ -224,9 +227,6 @@ const CreateShow = () => {
                 <input type="file" onChange={uploadToIPFS} placeholder="upload ticket photo" />
 
             </form>
-        </div>
-        <div>
-            <button onClick={_convertDateTime} >Test</button>
         </div>
     </div>
   )

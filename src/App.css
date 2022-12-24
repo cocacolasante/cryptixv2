@@ -4,6 +4,15 @@
   padding-right: 25px;
   padding-top: 12px;;
 }
+.router-links{
+  display: inline-flex;
+  
+}
+.router-link{
+  padding-right: 15px;
+  text-decoration: none;
+  list-style-type: none;
+}
 
 .thumbnail{
   max-height: 250px;
@@ -13,4 +22,14 @@
 .create-container{
   padding-left: 25px;
   padding-bottom: 25px;
+}
+
+.logo-div{
+  display: flex;
+  float: left;
+  padding-left: 25px;
+  padding-top: 12px;;
+}
+.create-show-div{
+  padding-top: 25px;
 }
