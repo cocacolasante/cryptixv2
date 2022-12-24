@@ -79,11 +79,25 @@ const CreateShow = () => {
         }
     }
 
+    const _convertDateTime = () =>{
+        const endDate = new Date(showDate)
+        let today = new Date();
+        let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+        let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        let dateTime = date+' '+time;
+        const currentDateTime = new Date(dateTime)
+        let seconds = Math.abs(endDate.getTime() - currentDateTime.getTime())/1000;
+        console.log(seconds)
+
+        return seconds
+        
+    }
 
 
     const createNewShow = async (e) =>{
         e.preventDefault()
 
+        const secondsToShow = _convertDateTime()
         
         try{
 
@@ -95,7 +109,7 @@ const CreateShow = () => {
     
                 const CreateShowContract = new ethers.Contract(CREATE_SHOW_ADDRESS, createContractAbi.abi, signer )
     
-                const tx = await CreateShowContract.createShow(showName, showSymbol, bandAddress, venueAddress, showDate, showPrice)
+                const tx = await CreateShowContract.createShow(showName, showSymbol, bandAddress, venueAddress, secondsToShow, showPrice)
                 
 
                 const receipt = await tx.wait()
@@ -189,7 +203,7 @@ const CreateShow = () => {
                 <label >Venue Address</label>
                 <input onChange={e=>setVenueAddress(e.target.value)} name="show name" />
                 <label >Show Date </label>
-                <input onChange={e=>setShowDate(e.target.value)} name="show name" />
+                <input type="datetime-local" onChange={e=>setShowDate(e.target.value)} name="show name" />
 
                 <label >Ticket Price </label>
                 <input onChange={e=>setShowPrice(e.target.value)} name="show name" />
@@ -203,6 +217,9 @@ const CreateShow = () => {
                 <input type="file" onChange={uploadToIPFS} placeholder="upload ticket photo" />
 
             </form>
+        </div>
+        <div>
+            <button onClick={_convertDateTime} >Test</button>
         </div>
     </div>
   )

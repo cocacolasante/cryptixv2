@@ -9,3 +9,8 @@
   max-height: 250px;
   max-width: 250px;
 }
+
+.create-container{
+  padding-left: 25px;
+  padding-bottom: 25px;
+}

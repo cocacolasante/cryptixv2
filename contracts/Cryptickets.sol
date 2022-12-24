@@ -111,6 +111,7 @@ contract Cryptickets is ERC721URIStorage{
 
     function payBandAndVenue() public payable {
         require(showCancelled == false, "show not completed");
+        require(endDate > block.timestamp, "show not over");
         showCompleted = true;
         IEscrow(escrowAddress).releaseFunds();
 
