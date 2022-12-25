@@ -153,14 +153,14 @@ const ViewShows = () => {
         {!allShows ? <p>Loading Blockchain Data</p> :( allShows.map((i)=>{
             console.log(i)
             return(
-                <div key ={i["showNumber"]}>
-                    <h3 >{i["showNumber"]}</h3>
-                    <h2>{i["ShowName"]}</h2>
+                <div className='border-radius-outline show-card' key ={i["showNumber"]}>
+                    <h3 >Show Number: {i["showNumber"]}</h3>
+                    <h2>Show Name: {i["ShowName"]}</h2>
                     <img className='thumbnail' src={i["image"] } alt="tickets" />
 
-                    <h3>{i["bandAddress"]}</h3>
-                    <h3>{i["venueAddress"]}</h3>
-                    <h3>{i["ticketAddress"]}</h3>
+                    <h3>Band: {i["bandAddress"].slice(0, 6)}...{i["bandAddress"].slice(-6)}</h3>
+                    <h3>Venue: {i["venueAddress"].slice(0, 6)}...{i["venueAddress"].slice(-6)}</h3>
+                    <h3>Tickets: {i["ticketAddress"].slice(0, 6)}...{i["ticketAddress"].slice(-6)}</h3>
                     <button value={i} onClick={e=>buyTickets(e.target.value, i["ticketAddress"], i["ShowName"], i["bandAddress"], i["venueAddress"])} >Buy Ticket</button>
 
                     <button value={i["ticketAddress"]} onClick={e=>_getTicketNFTImage(e.target.value)} >test</button>

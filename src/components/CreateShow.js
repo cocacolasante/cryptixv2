@@ -192,8 +192,8 @@ const CreateShow = () => {
         <div>
             <h1>Create Show</h1>
         </div>
-        <div className='create-show-div'>
-            <h2>Show info</h2>
+        <div className='create-show-div border-radius-outline'>
+            <h2>Preview Show info</h2>
             <p>Show Name: {showName} </p>
             <p>Symbol: {showSymbol} </p>
             <p>Band Address: {bandAddress} </p>
@@ -202,7 +202,7 @@ const CreateShow = () => {
             <p>Show Price: {showPrice} </p>
             <p>Max Tickets: {maxSupply} </p>
         </div>
-        <div className='create-show-inputs'>
+        <div className='create-show-inputs border-radius-outline'>
             <h2>Create Tickets For Your Event Below</h2>
             <form className='create-form'>
 
@@ -218,13 +218,13 @@ const CreateShow = () => {
                 <label >Venue Address</label>
                 <input onChange={e=>setVenueAddress(e.target.value)} name="venue address" required/>
                 <br />
-                <label >Show Date </label>
+                <label >Show Date</label>
                 <input type="datetime-local" onChange={e=>setShowDate(e.target.value)} name="show date" required />
                 <br />
-                <label >Ticket Price </label>
+                <label >Ticket Price</label>
                 <input onChange={e=>setShowPrice(e.target.value)} name="ticket price" required />
                 <br />
-                <label >Set Max Amount of Tickets </label>
+                <label >Set Max Supply of Tickets </label>
                 <input onChange={e=>setMaxSupply(e.target.value)} name="max supply" required />
                 <br />
                 <button onClick={e=>createNewShow(e)} >Create New Show</button>
